@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_inovations/view/product_screen.dart';
 import 'package:flutter_inovations/view/student_screen.dart';
 import 'package:flutter_inovations/view/teacher_screen.dart';
 
@@ -18,11 +19,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Teacher Database',
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-      ),
+      title: 'Product Management',
+      theme: ThemeData(primarySwatch: Colors.blue),
       home: MyHomePage(),
     );
   }

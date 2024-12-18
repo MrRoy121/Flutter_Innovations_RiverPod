@@ -17,4 +17,3 @@ class Course {
   @Backlink(to: "courses")
   final students = IsarLinks<Student>();
 }
-

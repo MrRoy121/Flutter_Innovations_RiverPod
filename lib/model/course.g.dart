@@ -29,7 +29,22 @@ const CourseSchema = CollectionSchema(
   deserializeProp: _courseDeserializeProp,
   idName: r'id',
   indexes: {},
-  links: {},
+  links: {
+    r'teacher': LinkSchema(
+      id: -2874831347665488055,
+      name: r'teacher',
+      target: r'Teacher',
+      single: true,
+      linkName: r'course',
+    ),
+    r'students': LinkSchema(
+      id: 2157553606399243280,
+      name: r'students',
+      target: r'Student',
+      single: false,
+      linkName: r'courses',
+    )
+  },
   embeddedSchemas: {},
   getId: _courseGetId,
   getLinks: _courseGetLinks,
@@ -87,11 +102,13 @@ Id _courseGetId(Course object) {
 }
 
 List<IsarLinkBase<dynamic>> _courseGetLinks(Course object) {
-  return [];
+  return [object.teacher, object.students];
 }
 
 void _courseAttach(IsarCollection<dynamic> col, Id id, Course object) {
   object.id = id;
+  object.teacher.attach(col, col.isar.collection<Teacher>(), r'teacher', id);
+  object.students.attach(col, col.isar.collection<Student>(), r'students', id);
 }
 
 extension CourseQueryWhereSort on QueryBuilder<Course, Course, QWhere> {
@@ -355,7 +372,76 @@ extension CourseQueryFilter on QueryBuilder<Course, Course, QFilterCondition> {
 
 extension CourseQueryObject on QueryBuilder<Course, Course, QFilterCondition> {}
 
-extension CourseQueryLinks on QueryBuilder<Course, Course, QFilterCondition> {}
+extension CourseQueryLinks on QueryBuilder<Course, Course, QFilterCondition> {
+  QueryBuilder<Course, Course, QAfterFilterCondition> teacher(
+      FilterQuery<Teacher> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'teacher');
+    });
+  }
+
+  QueryBuilder<Course, Course, QAfterFilterCondition> teacherIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'teacher', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Course, Course, QAfterFilterCondition> students(
+      FilterQuery<Student> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'students');
+    });
+  }
+
+  QueryBuilder<Course, Course, QAfterFilterCondition> studentsLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'students', length, true, length, true);
+    });
+  }
+
+  QueryBuilder<Course, Course, QAfterFilterCondition> studentsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'students', 0, true, 0, true);
+    });
+  }
+
+  QueryBuilder<Course, Course, QAfterFilterCondition> studentsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'students', 0, false, 999999, true);
+    });
+  }
+
+  QueryBuilder<Course, Course, QAfterFilterCondition> studentsLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'students', 0, true, length, include);
+    });
+  }
+
+  QueryBuilder<Course, Course, QAfterFilterCondition> studentsLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'students', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<Course, Course, QAfterFilterCondition> studentsLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(
+          r'students', lower, includeLower, upper, includeUpper);
+    });
+  }
+}
 
 extension CourseQuerySortBy on QueryBuilder<Course, Course, QSortBy> {
   QueryBuilder<Course, Course, QAfterSortBy> sortByTitle() {
